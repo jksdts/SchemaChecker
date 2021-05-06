@@ -13,13 +13,14 @@ const schema = {
 };
 
 const body = {
-    name: "William",
+    name: "William Something",
     age: 33,
     founder: true,
     company: "Aclymate",
     address: {
-        description: "Desc",
-        country: 22
+        description: "2432 S. Downing St, Denver, CO 80210",
+        county: "Denver",
+        country: "USA"
       }
 };
 
@@ -34,31 +35,19 @@ function schemaChecker(body, schema) {
                 truthy = false;
             }
         }
-        else if(keySchema == "type" || keySchema == "required") {   /* If already in recusive call, check if key matches to "type" or "required" */
-            if(keySchema == "type" && typeof(body) != properties) {       /* If type of attribute does not match type in schema, return false */
-                truthy = false;
-            }
-            else if(keySchema == "required" && properties == true) { /* Else check if attribute required by schema */
-                if(body == null || body == "") {    /* If required and missing, return false */
-                    truthy = false; 
-                }
-                else if(typeof(body!= properties["type"])) {
-                    return false;
-                }
-            }
+        else if(schema["required"] && !body) {   /* If already in recusive call, check if key matches to "type" or "required" */
+            truthy = false;
+        }
+        else if(body && schema["type"] && typeof(body) != schema["type"]) {
+            truthy = false;
         }
         else {
             Object.keys(properties).forEach( function(values) {
-                if(values == "required" && properties[values] == true) {    /* Check if attribute is required by schema */
-                    if(body[keySchema] == null || body[keySchema] == "") {  /* If required and missing, return false */
-                        truthy = false;           
-                    }
-                    else if(typeof(body[keySchema] != properties["type"])) {
-                        return false;
-                    }
-                 }
-                 else if(values == "type" && typeof(body[keySchema]) != properties[values] && properties["required"]) {   /* Else check if attribute does not match type stated in schema */
-                    truthy = false;                                                            /* If mismatched type, return false */
+                if(properties["required"] && !body[keySchema]) {
+                    truthy = false;
+                }
+                else if(body[keySchema] && properties["type"] && typeof(body[keySchema]) != properties["type"]) {
+                    truthy = false;
                 }
             });
         }
